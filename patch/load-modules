@@ -1,0 +1,10 @@
+
+## AnyKernel load-modules
+on post-fs
+    start load-modules-AK
+
+service load-modules-AK /system/bin/insmod /system/lib/modules/wlan.ko
+    user root
+    seclabel u:r:su:s0
+    oneshot
+## END AnyKernel load-modules
