@@ -4,20 +4,20 @@
 ## AnyKernel setup
 # begin properties
 properties() {
-kernel.string=DirtyV by bsmitty83 @ xda-developers
+kernel.string=Nexus 9 ZSWAP+NoFED
 do.devicecheck=1
 do.modules=0
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=maguro
-device.name2=toro
-device.name3=toroplus
-device.name4=
+device.name1=flounder
+device.name2=Nexus 9
+device.name3=flounder_lte
+device.name4=Nexus 9 LTE
 device.name5=
 } # end properties
 
 # shell variables
-block=/dev/block/platform/omap/omap_hsmmc.0/by-name/boot;
+block=/dev/block/platform/sdhci-tegra.3/by-name/LNX
 is_slot_device=0;
 
 
@@ -29,31 +29,24 @@ is_slot_device=0;
 ## AnyKernel file attributes
 # set permissions/ownership for included ramdisk files
 chmod -R 750 $ramdisk/*;
-chmod 644 $ramdisk/sbin/media_profiles.xml;
-chmod -R root:root $ramdisk/*;
-
+chown -R root:root $ramdisk/*;
 
 ## AnyKernel install
 dump_boot;
 
 # begin ramdisk changes
 
-# init.rc
-backup_file init.rc;
-replace_string init.rc "cpuctl cpu,timer_slack" "mount cgroup none /dev/cpuctl cpu" "mount cgroup none /dev/cpuctl cpu,timer_slack";
-append_file init.rc "run-parts" init;
+backup_file fstab.flounder
+sed -i -r -e 's/forceencrypt=/encryptable=/g; s/,verify=[^, ]+//g; s/zramsize=[^, ]+/zramsize=133353300/;' fstab.flounder
+cp fstab.flounder fstab.flounder64
+#cp fstab.flounder /sdcard/fstab.flounder.ak2
 
-# init.tuna.rc
-backup_file init.tuna.rc;
-insert_line init.tuna.rc "nodiratime barrier=0" after "mount_all /fstab.tuna" "\tmount ext4 /dev/block/platform/omap/omap_hsmmc.0/by-name/userdata /data remount nosuid nodev noatime nodiratime barrier=0";
-append_file init.tuna.rc "dvbootscript" init.tuna;
-
-# fstab.tuna
-backup_file fstab.tuna;
-patch_fstab fstab.tuna /system ext4 options "noatime,barrier=1" "noatime,nodiratime,barrier=0";
-patch_fstab fstab.tuna /cache ext4 options "barrier=1" "barrier=0,nomblk_io_submit";
-patch_fstab fstab.tuna /data ext4 options "data=ordered" "nomblk_io_submit,data=writeback";
-append_file fstab.tuna "usbdisk" fstab;
+#zswap_opts='zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=60 zswap.zpool=z3fold'
+patch_cmdline zswap.enabled=1
+patch_cmdline zswap.compressor=lz4
+patch_cmdline zswap.max_pool_percent=60
+patch_cmdline zswap.zpool=z3fold
+#cp "$cmdfile" /sdcard/cmdline-ak2
 
 # end ramdisk changes
 
