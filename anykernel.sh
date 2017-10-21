@@ -48,6 +48,10 @@ patch_cmdline zswap.max_pool_percent=60
 patch_cmdline zswap.zpool=z3fold
 #cp "$cmdfile" /sdcard/cmdline-ak2
 
+mount -o rw,remount -t auto /system
+$bb cp -v -rLf /tmp/anykernel/system/* $root/system
+mount -o ro,remount -t auto /system
+
 # end ramdisk changes
 
 write_boot;
