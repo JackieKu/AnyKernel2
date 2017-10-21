@@ -379,7 +379,7 @@ patch_cmdline() {
     echo "$cmdtmp $1" > $cmdfile;
   else
     match=$(grep -o "$1.*$" $cmdfile | cut -d\  -f1);
-    sed -i -e "s;${match};${2};" -e 's;  ; ;' -e 's;[ \t]*$;;' $cmdfile;
+    sed -i -e "s;${match};${2:-$1};" -e 's;  ; ;' -e 's;[ \t]*$;;' $cmdfile;
   fi;
 }
 
